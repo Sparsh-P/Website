@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sparsh Patel | Quant Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="bg-chart"></canvas>
+
+  <!-- ═══════════════════════════════════════════════════════ TICKER ═══ -->
+  <div id="ticker-wrapper">
+    <div id="ticker-badge">
+      <span class="tb-dot"></span>
+      <span class="tb-label">SKILL.IDX</span>
+      <span class="tb-sep">//</span>
+      <span class="tb-sub">LIVE</span>
+    </div>
+    <div id="ticker-fade"></div>
+    <div id="ticker">
+      <!-- set 1 -->
+      <span class="ticker-item gain"><span class="ti-sym">PYTHON</span><span class="ti-px">184.62</span><span class="tc">▲2.40%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">BLACK·SCHOLES</span><span class="ti-px">212.05</span><span class="tc">▲1.12%</span></span>
+      <span class="ticker-item neutral"><span class="ti-sym">MONTE·CARLO</span><span class="ti-px">158.40</span><span class="tc">◆0.00%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">NLP</span><span class="ti-px">097.18</span><span class="tc">▲9.04%</span></span>
+      <span class="ticker-item loss"><span class="ti-sym">C++</span><span class="ti-px">143.77</span><span class="tc">▼0.32%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">GBM</span><span class="ti-px">126.91</span><span class="tc">▲3.18%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">VASICEK</span><span class="ti-px">088.44</span><span class="tc">▲0.76%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">SQL</span><span class="ti-px">164.25</span><span class="tc">▲1.88%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">MLE</span><span class="ti-px">112.07</span><span class="tc">▲2.05%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">POWER·BI</span><span class="ti-px">079.62</span><span class="tc">▲0.54%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">OPTIONS·PX</span><span class="ti-px">233.19</span><span class="tc">▲4.21%</span></span>
+      <span class="ticker-item neutral"><span class="ti-sym">STOCH·CALC</span><span class="ti-px">175.88</span><span class="tc">◆0.00%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">LoRA</span><span class="ti-px">068.12</span><span class="tc">▲5.66%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">CIR·MODEL</span><span class="ti-px">101.33</span><span class="tc">▲0.92%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">ALGO·TRADING</span><span class="ti-px">198.47</span><span class="tc">▲2.77%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">PYTORCH</span><span class="ti-px">156.03</span><span class="tc">▲1.44%</span></span>
+      <span class="ticker-item loss"><span class="ti-sym">EXCEL·VBA</span><span class="ti-px">042.18</span><span class="tc">▼0.14%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">PANDAS</span><span class="ti-px">174.50</span><span class="tc">▲1.92%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">NUMPY</span><span class="ti-px">162.30</span><span class="tc">▲0.88%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">RISK·MGMT</span><span class="ti-px">201.75</span><span class="tc">▲3.45%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">TENSORFLOW</span><span class="ti-px">138.22</span><span class="tc">▲2.13%</span></span>
+      <span class="ticker-item neutral"><span class="ti-sym">DOCKER</span><span class="ti-px">094.60</span><span class="tc">◆0.00%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">GIT</span><span class="ti-px">122.85</span><span class="tc">▲0.67%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">BLOOMBERG·API</span><span class="ti-px">248.10</span><span class="tc">▲1.56%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">R</span><span class="ti-px">086.44</span><span class="tc">▲0.72%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">GREEKS</span><span class="ti-px">195.33</span><span class="tc">▲2.88%</span></span>
+      <span class="ticker-item loss"><span class="ti-sym">MATLAB</span><span class="ti-px">055.91</span><span class="tc">▼0.48%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">SCIKIT·LEARN</span><span class="ti-px">144.72</span><span class="tc">▲1.35%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">FIXED·INCOME</span><span class="ti-px">218.60</span><span class="tc">▲0.94%</span></span>
+      <!-- set 2 (mirror for seamless loop) -->
+      <span class="ticker-item gain"><span class="ti-sym">PYTHON</span><span class="ti-px">184.62</span><span class="tc">▲2.40%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">BLACK·SCHOLES</span><span class="ti-px">212.05</span><span class="tc">▲1.12%</span></span>
+      <span class="ticker-item neutral"><span class="ti-sym">MONTE·CARLO</span><span class="ti-px">158.40</span><span class="tc">◆0.00%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">NLP</span><span class="ti-px">097.18</span><span class="tc">▲9.04%</span></span>
+      <span class="ticker-item loss"><span class="ti-sym">C++</span><span class="ti-px">143.77</span><span class="tc">▼0.32%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">GBM</span><span class="ti-px">126.91</span><span class="tc">▲3.18%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">VASICEK</span><span class="ti-px">088.44</span><span class="tc">▲0.76%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">SQL</span><span class="ti-px">164.25</span><span class="tc">▲1.88%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">MLE</span><span class="ti-px">112.07</span><span class="tc">▲2.05%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">POWER·BI</span><span class="ti-px">079.62</span><span class="tc">▲0.54%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">OPTIONS·PX</span><span class="ti-px">233.19</span><span class="tc">▲4.21%</span></span>
+      <span class="ticker-item neutral"><span class="ti-sym">STOCH·CALC</span><span class="ti-px">175.88</span><span class="tc">◆0.00%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">LoRA</span><span class="ti-px">068.12</span><span class="tc">▲5.66%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">CIR·MODEL</span><span class="ti-px">101.33</span><span class="tc">▲0.92%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">ALGO·TRADING</span><span class="ti-px">198.47</span><span class="tc">▲2.77%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">PYTORCH</span><span class="ti-px">156.03</span><span class="tc">▲1.44%</span></span>
+      <span class="ticker-item loss"><span class="ti-sym">EXCEL·VBA</span><span class="ti-px">042.18</span><span class="tc">▼0.14%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">PANDAS</span><span class="ti-px">174.50</span><span class="tc">▲1.92%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">NUMPY</span><span class="ti-px">162.30</span><span class="tc">▲0.88%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">RISK·MGMT</span><span class="ti-px">201.75</span><span class="tc">▲3.45%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">TENSORFLOW</span><span class="ti-px">138.22</span><span class="tc">▲2.13%</span></span>
+      <span class="ticker-item neutral"><span class="ti-sym">DOCKER</span><span class="ti-px">094.60</span><span class="tc">◆0.00%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">GIT</span><span class="ti-px">122.85</span><span class="tc">▲0.67%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">BLOOMBERG·API</span><span class="ti-px">248.10</span><span class="tc">▲1.56%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">R</span><span class="ti-px">086.44</span><span class="tc">▲0.72%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">GREEKS</span><span class="ti-px">195.33</span><span class="tc">▲2.88%</span></span>
+      <span class="ticker-item loss"><span class="ti-sym">MATLAB</span><span class="ti-px">055.91</span><span class="tc">▼0.48%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">SCIKIT·LEARN</span><span class="ti-px">144.72</span><span class="tc">▲1.35%</span></span>
+      <span class="ticker-item gain"><span class="ti-sym">FIXED·INCOME</span><span class="ti-px">218.60</span><span class="tc">▲0.94%</span></span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ NAV ═══ -->
+  <nav id="navbar">
+    <div class="nav-brand">SPARSH PATEL</div>
+    <ul class="nav-links">
+      <li><a href="#about"    class="nav-link">[02] ABOUT</a></li>
+      <li><a href="#work"     class="nav-link">[03] WORK</a></li>
+      <li><a href="#research" class="nav-link">[04] CERTIFICATIONS</a></li>
+      <li><a href="#impact"   class="nav-link">[05] IMPACT</a></li>
+      <li><a href="#contact"  class="nav-link">[06] CONTACT</a></li>
+    </ul>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span>AVAILABLE</span>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════════ HERO ═══ -->
+  <section id="hero">
+    <canvas id="vol-surface-canvas"></canvas>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="terminal-boot" id="terminal-boot">
+        <p class="boot-line" id="bl-1"></p>
+        <p class="boot-line" id="bl-2"></p>
+        <p class="boot-line" id="bl-3"></p>
+        <p class="boot-line" id="bl-4"></p>
+      </div>
+      <h1 class="hero-name" id="hero-name">SPARSH PATEL</h1>
+      <p class="hero-tagline"><span id="hero-tagline"></span><span class="cursor-blink">|</span></p>
+      <div class="hud-stats">
+        <div class="hud-card hud-clock-card">
+          <span class="hud-label">NEW YORK</span>
+          <span class="hud-value cyan" id="hud-clock">--:--:--</span>
+          <span class="hud-sub">
+            <span class="hud-dot" id="hud-mkt-dot"></span>
+            <span id="hud-mkt-state">LOADING</span>
+          </span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label">EDUCATION</span>
+          <span class="hud-value cyan">NYU TANDON</span>
+          <span class="hud-sub">MS FINANCIAL ENGINEERING</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label">FOCUS</span>
+          <span class="hud-value gold">DERIVATIVES</span>
+          <span class="hud-sub">PRICING · RISK · STRATEGY</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label">SEEKING</span>
+          <span class="hud-value green">
+            <span class="hud-pulse"></span>SUMMER '26
+          </span>
+          <span class="hud-sub">QUANT · SWE · RESEARCH</span>
+        </div>
+      </div>
+      <div class="hero-cta">
+        <a href="#about" class="cta-btn primary">[ VIEW PORTFOLIO ]</a>
+        <a href="./resume.pdf" class="cta-btn secondary" target="_blank">[ DOWNLOAD RESUME ]</a>
+      </div>
+    </div>
+    <div class="scroll-hint">SCROLL TO EXPLORE <span class="arrow-bounce">▼</span></div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════ ABOUT ═══ -->
+  <section id="about" class="section-reveal">
+    <div class="section-header">
+      <span class="section-tag">[02]</span>
+      <h2>ABOUT</h2>
+      <div class="header-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-terminal">
+        <div class="terminal-titlebar">
+          <span class="tdot red"></span><span class="tdot yellow"></span><span class="tdot tgreen"></span>
+          <span class="ttitle">profile.json</span>
+        </div>
+        <div class="terminal-body">
+<pre class="json-code">{
+  <span class="jk">"name"</span>: <span class="js">"Sparsh Patel"</span>,
+  <span class="jk">"role"</span>: <span class="js">"Quant Developer &amp; Researcher"</span>,
+  <span class="jk">"location"</span>: <span class="js">"New York, US"</span>,
+  <span class="jk">"focus"</span>: [
+    <span class="js">"Financial Engineering"</span>,
+    <span class="js">"Algorithmic Trading"</span>,
+    <span class="js">"ML in Finance"</span>,
+    <span class="js">"Stochastic Modelling"</span>
+  ],
+  <span class="jk">"education"</span>: {
+    <span class="jk">"ms"</span>: <span class="js">"NYU Tandon — FinEng"</span>,
+    <span class="jk">"btech"</span>: <span class="js">"SRM IST — CS Eng"</span>
+  },
+  <span class="jk">"gpa_ms"</span>: <span class="jn">3.8</span>,
+  <span class="jk">"gpa_btech"</span>: <span class="jn">9.2</span>,
+  <span class="jk">"available"</span>: <span class="jb">true</span>
+}</pre>
+        </div>
+      </div>
+      <div class="about-sidebar">
+        <div class="sidebar-block">
+          <p class="sidebar-label">PROFILE</p>
+          <div class="profile-photo-wrap">
+            <img src="assets/sparsh.jpg" alt="Sparsh Patel" class="profile-photo-circle" />
+          </div>
+        </div>
+        <div class="sidebar-block">
+          <p class="sidebar-label">ABOUT ME</p>
+          <div class="bio">
+            <p class="bio-line"><span class="bio-prompt">&gt;</span> Hello, I'm <span class="bio-accent">Sparsh</span> — a quant developer &amp; researcher pursuing my MS in Financial Engineering at NYU Tandon.</p>
+            <p class="bio-line"><span class="bio-prompt">&gt;</span> I'm hunting roles in <span class="bio-accent">quantitative analysis</span>, <span class="bio-accent">option selling</span>, <span class="bio-accent">equity strategy</span>, and <span class="bio-accent">portfolio management</span> — anywhere I can price risk, chase alpha, and turn market noise into signal.</p>
+            <p class="bio-line"><span class="bio-prompt">&gt;</span> I live in the space where stochastic calculus meets clean Python — obsessed with building pricing models, stress-testing ideas against data, and shipping things that actually work.</p>
+            <p class="bio-line"><span class="bio-prompt">&gt;</span> Off-desk, I'm plugged into music, lifting weights, and staying disciplined about fitness — same mindset I bring to the markets: show up, compound, repeat.</p>
+            <div class="bio-tags">
+              <span>Quant</span><span>Options</span><span>Equities</span><span>Portfolio</span><span>Python</span><span>Music</span><span>Fitness</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="edu-cards">
+      <div class="edu-card">
+        <span class="edu-badge">MS</span>
+        <div class="edu-info">
+          <h3>Financial Engineering</h3>
+          <p>New York University — Tandon School of Engineering</p>
+        </div>
+        <div class="edu-meta">
+          <span class="edu-date">Expected 05/27</span>
+          <span class="edu-gpa green">GPA 3.8 / 4.0</span>
+        </div>
+      </div>
+      <div class="edu-card">
+        <span class="edu-badge">BTech</span>
+        <div class="edu-info">
+          <h3>Computer Science Engineering</h3>
+          <p>SRM IST — Department of Computing Technologies</p>
+        </div>
+        <div class="edu-meta">
+          <span class="edu-date">10/24</span>
+          <span class="edu-gpa green">GPA 9.2 / 10.0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════ WORK ════ -->
+  <section id="work" class="section-reveal">
+    <div class="section-header">
+      <span class="section-tag">[03]</span>
+      <h2>WORK <span class="sec-slash">/</span> MONTE CARLO</h2>
+      <div class="header-line"></div>
+    </div>
+    <p class="work-intro">Each path is a simulated GBM trajectory. Each terminal node lands on a real internship or project — hover a node to inspect.</p>
+    <div class="work-controls">
+      <button class="work-btn" id="mc-run">[ RUN SIMULATION ]</button>
+      <div class="work-stat"><span class="ws-lbl">PATHS</span><span class="ws-val" id="mc-n">0 / 12</span></div>
+      <div class="work-stat"><span class="ws-lbl">STEPS</span><span class="ws-val">252</span></div>
+      <div class="work-stat"><span class="ws-lbl">MODEL</span><span class="ws-val">GBM</span></div>
+      <div class="work-stat"><span class="ws-lbl">STATUS</span><span class="ws-val green" id="mc-status">IDLE</span></div>
+    </div>
+    <div class="work-grid">
+      <div class="work-canvas-wrap">
+        <canvas id="mc-canvas"></canvas>
+        <div class="work-info-panel" id="work-info">
+          <div class="wi-placeholder">
+            <span class="wi-prompt">&gt;_</span> Awaiting simulation.<br>
+            Hover a terminal node to inspect path details.
+          </div>
+        </div>
+        <div class="work-hint" id="work-hint">&gt;_ Hover any path or node to inspect</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ CERTIFICATIONS ═══ -->
+  <section id="research" class="section-reveal">
+    <div class="section-header">
+      <span class="section-tag">[04]</span>
+      <h2>CERTIFICATIONS</h2>
+      <div class="header-line"></div>
+    </div>
+
+    <div class="deck-meta">
+      <span class="deck-meta-lbl">&gt;_ DEALT HAND</span>
+      <span class="deck-meta-hand" id="deck-meta-hand">— — — — — —</span>
+      <span class="deck-meta-sep">//</span>
+      <span class="deck-meta-eval" id="deck-meta-eval">SHUFFLING… <span class="deck-meta-star">★ BEST PAPER</span></span>
+    </div>
+    <div class="deck-stage">
+      <div class="deck-grid" id="deck-grid">
+
+        <!-- ── Bloomberg ── -->
+        <div class="play-card" data-i="0" data-color="cyan">
+          <div class="pc-flipper">
+            <div class="pc-front"></div>
+            <div class="pc-detail">
+              <div class="pc-corner tl"><span class="pc-rank"></span><span class="pc-si"></span></div>
+              <div class="pc-wm"></div>
+              <div class="pc-body">
+                <span class="pc-badge">CERT</span>
+                <h3 class="pc-title">Bloomberg Market Concepts</h3>
+                <p class="pc-inst">Bloomberg LP</p>
+                <p class="pc-date">Industry Certification</p>
+                <div class="pc-tags"><span>#FinancialMarkets</span><span>#Bloomberg</span><span>#Equities</span><span>#FX</span></div>
+              </div>
+              <div class="pc-corner br"><span class="pc-rank"></span><span class="pc-si"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── QFI ── -->
+        <div class="play-card" data-i="1" data-color="green">
+          <div class="pc-flipper">
+            <div class="pc-front"></div>
+            <div class="pc-detail">
+              <div class="pc-corner tl"><span class="pc-rank"></span><span class="pc-si"></span></div>
+              <div class="pc-wm"></div>
+              <div class="pc-body">
+                <span class="pc-badge">CERT</span>
+                <h3 class="pc-title">Quant Finance Institute Certified</h3>
+                <p class="pc-inst">QFI</p>
+                <p class="pc-date">Industry Certification</p>
+                <div class="pc-tags"><span>#QuantFinance</span><span>#Derivatives</span><span>#RiskMgmt</span></div>
+              </div>
+              <div class="pc-corner br"><span class="pc-rank"></span><span class="pc-si"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Google Data Analytics ── -->
+        <div class="play-card" data-i="2" data-color="cyan">
+          <div class="pc-flipper">
+            <div class="pc-front"></div>
+            <div class="pc-detail">
+              <div class="pc-corner tl"><span class="pc-rank"></span><span class="pc-si"></span></div>
+              <div class="pc-wm"></div>
+              <div class="pc-body">
+                <span class="pc-badge">CERT</span>
+                <h3 class="pc-title">Google Data Analytics Professional</h3>
+                <p class="pc-inst">Google</p>
+                <p class="pc-date">Professional Certificate</p>
+                <div class="pc-tags"><span>#DataAnalytics</span><span>#Python</span><span>#SQL</span><span>#Tableau</span></div>
+              </div>
+              <div class="pc-corner br"><span class="pc-rank"></span><span class="pc-si"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Oracle Database Foundations ── -->
+        <div class="play-card" data-i="3" data-color="cyan">
+          <div class="pc-flipper">
+            <div class="pc-front"></div>
+            <div class="pc-detail">
+              <div class="pc-corner tl"><span class="pc-rank"></span><span class="pc-si"></span></div>
+              <div class="pc-wm"></div>
+              <div class="pc-body">
+                <span class="pc-badge">DATABASE</span>
+                <h3 class="pc-title">Oracle Database Foundations</h3>
+                <p class="pc-inst">Oracle Academy</p>
+                <p class="pc-date">Professional Certification</p>
+                <div class="pc-tags"><span>#SQL</span><span>#Oracle</span><span>#RDBMS</span><span>#DataModeling</span><span>#ERD</span><span>#Normalization</span></div>
+              </div>
+              <div class="pc-corner br"><span class="pc-rank"></span><span class="pc-si"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Entrepreneurship Bootcamp V ── -->
+        <div class="play-card" data-i="4" data-color="green">
+          <div class="pc-flipper">
+            <div class="pc-front"></div>
+            <div class="pc-detail">
+              <div class="pc-corner tl"><span class="pc-rank"></span><span class="pc-si"></span></div>
+              <div class="pc-wm"></div>
+              <div class="pc-body">
+                <span class="pc-badge">STARTUP</span>
+                <h3 class="pc-title">Entrepreneurship Bootcamp — Edition V</h3>
+                <p class="pc-inst">SRM Innovation Incubation &amp; Entrepreneurship Centre · w/ School of Design Thinking</p>
+                <p class="pc-date">18 — 22 April 2023</p>
+                <div class="pc-tags"><span>#DesignThinking</span><span>#Innovation</span><span>#Startup</span><span>#PitchDeck</span><span>#IdeationSprint</span></div>
+              </div>
+              <div class="pc-corner br"><span class="pc-rank"></span><span class="pc-si"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── GPT Best Paper (Award) ── -->
+        <div class="play-card pc-award" data-i="5" data-color="gold">
+          <div class="pc-flipper">
+            <div class="pc-front"></div>
+            <div class="pc-detail">
+              <div class="pc-award-ribbon">BEST PAPER · FCOM-Fintech'24</div>
+              <div class="pc-corner tl"><span class="pc-rank"></span><span class="pc-si"></span></div>
+              <div class="pc-wm"></div>
+              <div class="pc-body">
+                <span class="pc-badge">AI / NLP</span>
+                <h3 class="pc-title">Enhancing Medical Decision Support Using GPT</h3>
+                <p class="pc-inst">SRM IST · Dept. of Computing Technologies</p>
+                <p class="pc-date">07/23 — 12/23</p>
+                <div class="pc-tags"><span>#LoRA</span><span>#Transformers</span><span>#FineTuning</span><span>#HuggingFace</span></div>
+              </div>
+              <div class="pc-corner br"><span class="pc-rank"></span><span class="pc-si"></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════ IMPACT ═══ -->
+  <section id="impact" class="section-reveal">
+    <div class="section-header">
+      <span class="section-tag">[05]</span>
+      <h2>IMPACT</h2>
+      <div class="header-line"></div>
+    </div>
+    <p class="impact-sub">Quantified outcomes across internships — real numbers, real markets.</p>
+    <div class="alpha-grid">
+      <div class="alpha-card" data-val="4" data-prefix="+" data-suffix="%" data-color="green">
+        <div class="alpha-card-inner">
+          <span class="alpha-val green"><span class="alpha-num">0</span>%</span>
+          <span class="alpha-desc">Revenue uplift via Power BI brokerage trend analysis</span>
+          <span class="alpha-src">Shah Investors Home Ltd</span>
+        </div>
+        <div class="alpha-pulse"></div>
+      </div>
+      <div class="alpha-card" data-val="40" data-prefix="−" data-suffix="%" data-color="green">
+        <div class="alpha-card-inner">
+          <span class="alpha-val green">−<span class="alpha-num">0</span>%</span>
+          <span class="alpha-desc">Messaging cost reduction through platform optimisation</span>
+          <span class="alpha-src">Shah Investors Home Ltd</span>
+        </div>
+        <div class="alpha-pulse"></div>
+      </div>
+      <div class="alpha-card" data-val="11" data-prefix="+" data-suffix="%" data-color="green">
+        <div class="alpha-card-inner">
+          <span class="alpha-val green">+<span class="alpha-num">0</span>%</span>
+          <span class="alpha-desc">Algo strategy execution time improvement via backtesting</span>
+          <span class="alpha-src">Shah Investors Home Ltd</span>
+        </div>
+        <div class="alpha-pulse"></div>
+      </div>
+      <div class="alpha-card" data-val="9" data-prefix="+" data-suffix="%" data-color="cyan">
+        <div class="alpha-card-inner">
+          <span class="alpha-val cyan">+<span class="alpha-num">0</span>%</span>
+          <span class="alpha-desc">NLP-driven message targeting reach improvement</span>
+          <span class="alpha-src">CRM Messaging</span>
+        </div>
+        <div class="alpha-pulse"></div>
+      </div>
+      <div class="alpha-card" data-val="6" data-prefix="+" data-suffix="%" data-color="cyan">
+        <div class="alpha-card-inner">
+          <span class="alpha-val cyan">+<span class="alpha-num">0</span>%</span>
+          <span class="alpha-desc">Organic traffic via statistical bottleneck analysis</span>
+          <span class="alpha-src">CRM Messaging</span>
+        </div>
+        <div class="alpha-pulse"></div>
+      </div>
+      <div class="alpha-card" data-val="40" data-prefix="+" data-suffix="%" data-color="gold">
+        <div class="alpha-card-inner">
+          <span class="alpha-val gold">+<span class="alpha-num">0</span>%</span>
+          <span class="alpha-desc">Parse rate boost via Python + AWS ITR automation</span>
+          <span class="alpha-src">Genesis AI</span>
+        </div>
+        <div class="alpha-pulse"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ CONTACT ═══ -->
+  <section id="contact" class="section-reveal">
+    <div class="section-header">
+      <span class="section-tag">[06]</span>
+      <h2>CONTACT</h2>
+      <div class="header-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="ci-row"><span class="ci-lbl">EMAIL</span><a href="mailto:sp8621@nyu.edu" class="ci-val">sp8621@nyu.edu</a></div>
+        <div class="ci-row"><span class="ci-lbl">LINKEDIN</span><a href="https://www.linkedin.com/in/sparsh-patel09" target="_blank" class="ci-val">sparsh-patel09</a></div>
+        <div class="ci-row"><span class="ci-lbl">LOCATION</span><span class="ci-val">New York, US</span></div>
+        <div class="ci-row"><span class="ci-lbl">STATUS</span><span class="ci-val"><span class="status-dot"></span> OPEN TO OPPORTUNITIES</span></div>
+      </div>
+      <form class="order-form" id="contact-form">
+        <div class="of-header"><span class="prompt">></span> PLACE ORDER</div>
+        <div class="of-row">
+          <label>FROM:</label>
+          <input type="text" placeholder="Your Name" required />
+        </div>
+        <div class="of-row">
+          <label>RE:</label>
+          <input type="text" placeholder="Subject" required />
+        </div>
+        <div class="of-row">
+          <label>MSG:</label>
+          <textarea rows="4" placeholder="Your message..." required></textarea>
+        </div>
+        <button type="submit" class="execute-btn">[ EXECUTE ORDER ]</button>
+        <p class="form-confirm" id="form-confirm" style="display:none">ORDER CONFIRMED. MESSAGE SENT ✓</p>
+      </form>
+    </div>
+    <footer class="site-footer">
+      <span>SPARSH PATEL © 2025</span>
+      <span class="footer-tag">BUILT WITH BLACK-SCHOLES PRECISION</span>
+    </footer>
+  </section>
+
+  <!-- Scroll progress dots -->
+  <div id="scroll-progress">
+    <div class="sp-dot" data-section="hero"     title="Hero"></div>
+    <div class="sp-dot" data-section="about"    title="About"></div>
+    <div class="sp-dot" data-section="work"     title="Work"></div>
+    <div class="sp-dot" data-section="research" title="Certifications"></div>
+    <div class="sp-dot" data-section="impact"   title="Impact"></div>
+    <div class="sp-dot" data-section="contact"  title="Contact"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
