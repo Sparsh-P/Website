@@ -1846,10 +1846,20 @@ function initContactForm() {
   if (!form) return;
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const confirm = document.getElementById('form-confirm');
-    if (confirm) {
-      confirm.style.display = 'block';
-      setTimeout(() => { confirm.style.display = 'none'; }, 4000);
+    const name    = form.querySelector('input[placeholder="Your Name"]').value.trim();
+    const subject = form.querySelector('input[placeholder="Subject"]').value.trim();
+    const msg     = form.querySelector('textarea').value.trim();
+    if (!name || !subject || !msg) return;
+
+    const email = 'sp8621@nyu.edu';
+    const body  = `Hi Sparsh,\n\nFrom: ${name}\n\n${msg}`;
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+
+    const conf = document.getElementById('form-confirm');
+    if (conf) {
+      conf.style.display = 'block';
+      setTimeout(() => { conf.style.display = 'none'; }, 4000);
     }
     form.reset();
   });
