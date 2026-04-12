@@ -132,7 +132,14 @@ function initVolSurface() {
   const canvas = document.getElementById('vol-surface-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  } catch (e) {
+    // WebGL unavailable (some Safari configs) — silently skip
+    console.warn('WebGL not available, skipping vol surface');
+    return;
+  }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
 
@@ -661,6 +668,23 @@ function initNavScroll() {
       ? 'rgba(5,8,16,0.97)'
       : 'rgba(10,14,26,0.92)';
   }, { passive: true });
+
+  // Hamburger menu toggle
+  const hamburger = document.getElementById('nav-hamburger');
+  const navLinksUl = document.getElementById('nav-links');
+  if (hamburger && navLinksUl) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinksUl.classList.toggle('open');
+    });
+    // Close menu when a link is tapped
+    navLinksUl.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navLinksUl.classList.remove('open');
+      });
+    });
+  }
 }
 
 /* ══════════════════════════════════════════ SCROLL REVEAL ════ */
@@ -760,7 +784,7 @@ function initExpMini() {
 function initMonteCarlo() {
   const canvas = document.getElementById('mc-canvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: false });
   const btn    = document.getElementById('mc-run');
   const nEl    = document.getElementById('mc-n');
   const stEl   = document.getElementById('mc-status');
@@ -955,12 +979,21 @@ function initMonteCarlo() {
 
   // Canvas state
   let W = 0, H = 0;
+  // Safari on iOS can report DPR 3 — cap at 2 for canvas perf / memory
   const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
   const resize = () => {
     const r = canvas.getBoundingClientRect();
-    canvas.width  = Math.round(r.width  * DPR);
-    canvas.height = Math.round(r.height * DPR);
+    // Guard: Safari can return 0-size rect if element not yet laid out
+    if (r.width < 10 || r.height < 10) return;
+    const pw = Math.round(r.width  * DPR);
+    const ph = Math.round(r.height * DPR);
+    // Safari fix: only resize canvas buffer if dimensions actually changed
+    // (avoids unnecessary buffer clears that cause flicker)
+    if (canvas.width !== pw || canvas.height !== ph) {
+      canvas.width  = pw;
+      canvas.height = ph;
+    }
     canvas.style.width  = r.width  + 'px';
     canvas.style.height = r.height + 'px';
     ctx.setTransform(1,0,0,1,0,0);
@@ -1031,14 +1064,14 @@ function initMonteCarlo() {
     });
   };
 
-  const padL = 52, padR = 230, padT = 14, padB = 28;
+  const padT = 14, padB = 28;
 
-  const chartRect = () => ({
-    x: padL,
-    y: padT,
-    w: W - padL - padR,
-    h: H - padT - padB
-  });
+  const chartRect = () => {
+    // Responsive padding — shorter labels on narrow screens
+    const pL = W < 500 ? 36 : 52;
+    const pR = W < 500 ? 130 : (W < 760 ? 170 : 230);
+    return { x: pL, y: padT, w: W - pL - pR, h: H - padT - padB };
+  };
 
   const toPx = (i, v) => {
     const c = chartRect();
@@ -1049,7 +1082,8 @@ function initMonteCarlo() {
 
   const drawAxes = () => {
     const c = chartRect();
-    ctx.font = '10px "JetBrains Mono", monospace';
+    const axisSize = W < 500 ? 7 : (W < 760 ? 8 : 10);
+    ctx.font = `${axisSize}px "JetBrains Mono", monospace`;
     ctx.fillStyle = 'rgba(138,154,179,.5)';
     ctx.strokeStyle = 'rgba(42,48,61,.6)';
     ctx.lineWidth = 1;
@@ -1086,7 +1120,8 @@ function initMonteCarlo() {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillStyle = 'rgba(0,212,255,.7)';
-    ctx.font = '9px "JetBrains Mono", monospace';
+    const titleSize = W < 500 ? 7 : 9;
+    ctx.font = `${titleSize}px "JetBrains Mono", monospace`;
     ctx.fillText('GBM PRICE PATHS · S₀=100', c.x, 2);
   };
 
@@ -1136,12 +1171,14 @@ function initMonteCarlo() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // label
-    ctx.font = '10px "JetBrains Mono", monospace';
+    // label — smaller font on narrow screens
+    const labelSize = W < 500 ? 7 : (W < 760 ? 8 : 10);
+    ctx.font = `${labelSize}px "JetBrains Mono", monospace`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.35 : 0.95})`;
-    ctx.fillText(p.data.label, x + 12, y);
+    const labelText = W < 500 ? p.data.label.substring(0, 18) : p.data.label;
+    ctx.fillText(labelText, x + 10, y);
   };
 
   const draw = () => {
@@ -1342,6 +1379,44 @@ function initMonteCarlo() {
     setTimeout(() => { if (!pointerOnPanel) hidePanel(); }, 80);
   });
 
+  // Touch support for mobile — tap a path/node to select, tap elsewhere to deselect
+  canvas.addEventListener('touchstart', (e) => {
+    if (!done) return;
+    const touch = e.touches[0];
+    const r = canvas.getBoundingClientRect();
+    const mx = touch.clientX - r.left;
+    const my = touch.clientY - r.top;
+    let nearest = -1;
+    let minD = 60;
+    paths.forEach((p, i) => {
+      const d = Math.hypot(mx - p.nodeX, my - p.nodeY);
+      if (d < minD) { minD = d; nearest = i; }
+    });
+    if (nearest === -1) {
+      let bestLineD = 24; // more forgiving on touch
+      paths.forEach((p, i) => {
+        const c = chartRect();
+        if (mx < c.x || mx > c.x + c.w) return;
+        const t = (mx - c.x) / c.w;
+        const iFloat = t * (STEPS - 1);
+        const i0 = Math.floor(iFloat);
+        const i1 = Math.min(STEPS - 1, i0 + 1);
+        const frac = iFloat - i0;
+        const v = p.pts[i0] * (1 - frac) + p.pts[i1] * frac;
+        const { y } = toPx(i0, v);
+        const d = Math.abs(my - y);
+        if (d < bestLineD) { bestLineD = d; nearest = i; }
+      });
+    }
+    if (nearest >= 0) {
+      e.preventDefault();
+      activeIdx = nearest;
+      renderPanel(paths[nearest].data);
+      showPanel();
+      draw();
+    }
+  }, { passive: false });
+
   btn.addEventListener('click', runSim);
   window.addEventListener('resize', () => {
     resize();
@@ -1349,17 +1424,27 @@ function initMonteCarlo() {
   });
 
   // Auto-run when section scrolls into view
+  // Lower threshold for Safari which can be strict about visibility
   const io = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !done && !running) {
-        setTimeout(runSim, 400);
+        // Safari needs an extra frame to lay out canvas before resize
+        setTimeout(() => {
+          resize();
+          runSim();
+        }, 500);
         io.unobserve(canvas);
       }
     });
-  }, { threshold: 0.25 });
+  }, { threshold: 0.1 });
   io.observe(canvas);
 
+  // Initial resize — retry if canvas rect is 0 (Safari lazy layout)
   resize();
+  if (W < 10) {
+    setTimeout(resize, 300);
+    setTimeout(resize, 800);
+  }
 }
 
 /* ══════════════════════════════════════════ HUD PANEL ════ */
