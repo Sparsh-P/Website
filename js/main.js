@@ -1067,10 +1067,24 @@ function initMonteCarlo() {
   const padT = 14, padB = 28;
 
   const chartRect = () => {
-    // Responsive padding — shorter labels on narrow screens
-    const pL = W < 500 ? 36 : 52;
-    const pR = W < 500 ? 130 : (W < 760 ? 170 : 230);
+    // Responsive padding — reserve enough room on the right for labels
+    const pL = W < 500 ? 32 : 52;
+    // Use ~40% of width for labels on narrow, less on larger
+    const pR = W < 500 ? Math.max(100, Math.floor(W * 0.38))
+             : W < 760 ? Math.max(150, Math.floor(W * 0.30))
+             : 230;
     return { x: pL, y: padT, w: W - pL - pR, h: H - padT - padB };
+  };
+
+  // Truncate a label so it fits inside `maxPx` at the given font
+  const fitLabel = (text, maxPx, fontPx) => {
+    ctx.font = `${fontPx}px "JetBrains Mono", monospace`;
+    if (ctx.measureText(text).width <= maxPx) return text;
+    let s = text;
+    while (s.length > 1 && ctx.measureText(s + '…').width > maxPx) {
+      s = s.slice(0, -1);
+    }
+    return s + '…';
   };
 
   const toPx = (i, v) => {
@@ -1171,14 +1185,16 @@ function initMonteCarlo() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // label — smaller font on narrow screens
-    const labelSize = W < 500 ? 7 : (W < 760 ? 8 : 10);
-    ctx.font = `${labelSize}px "JetBrains Mono", monospace`;
+    // label — smaller font on narrow screens, truncated to fit available width
+    const labelSize = W < 500 ? 8 : (W < 760 ? 9 : 10);
+    const gap = 8;
+    const available = Math.max(20, W - (x + gap) - 4); // 4px safety margin
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.35 : 0.95})`;
-    const labelText = W < 500 ? p.data.label.substring(0, 18) : p.data.label;
-    ctx.fillText(labelText, x + 10, y);
+    const labelText = fitLabel(p.data.label, available, labelSize);
+    ctx.font = `${labelSize}px "JetBrains Mono", monospace`;
+    ctx.fillText(labelText, x + gap, y);
   };
 
   const draw = () => {
@@ -1422,29 +1438,32 @@ function initMonteCarlo() {
     resize();
     if (done) draw();
   });
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => { resize(); if (done) draw(); }, 300);
+  });
 
   // Auto-run when section scrolls into view
   // Lower threshold for Safari which can be strict about visibility
   const io = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !done && !running) {
-        // Safari needs an extra frame to lay out canvas before resize
+        // Wait for scroll-reveal transform (.section-reveal scale 0.88) to settle
         setTimeout(() => {
           resize();
-          runSim();
-        }, 500);
+          // Double-check after layout fully settles
+          setTimeout(() => { resize(); runSim(); }, 200);
+        }, 700);
         io.unobserve(canvas);
       }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.05 });
   io.observe(canvas);
 
-  // Initial resize — retry if canvas rect is 0 (Safari lazy layout)
+  // Initial resize + several retries for Safari / lazy layout / scroll-reveal
   resize();
-  if (W < 10) {
-    setTimeout(resize, 300);
-    setTimeout(resize, 800);
-  }
+  setTimeout(resize, 300);
+  setTimeout(resize, 900);
+  setTimeout(() => { resize(); if (done) draw(); }, 1800);
 }
 
 /* ══════════════════════════════════════════ HUD PANEL ════ */
