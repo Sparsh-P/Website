@@ -1057,7 +1057,15 @@ function initMonteCarlo() {
   };
 
   const padL = 60, padR = 200, padT = 14, padB = 28;
-  const chartRect = () => ({ x: padL, y: padT, w: W - padL - padR, h: H - padT - padB });
+  const isMobile = () => window.innerWidth < 760;
+  const chartRect = () => {
+    if (isMobile()) {
+      // Mobile: use full width — labels are hidden, only dots shown
+      const pL = 36, pR = 24;
+      return { x: pL, y: padT, w: W - pL - pR, h: H - padT - padB };
+    }
+    return { x: padL, y: padT, w: W - padL - padR, h: H - padT - padB };
+  };
 
   const toPx = (i, v) => {
     const c = chartRect();
@@ -1156,12 +1164,14 @@ function initMonteCarlo() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // label
-    ctx.font = '10px "JetBrains Mono", monospace';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.35 : 0.95})`;
-    ctx.fillText(p.data.label, x + 8, y);
+    // label — hidden on mobile (tap a node to see details in panel)
+    if (!isMobile()) {
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.35 : 0.95})`;
+      ctx.fillText(p.data.label, x + 8, y);
+    }
   };
 
   const draw = () => {
@@ -1362,10 +1372,53 @@ function initMonteCarlo() {
     setTimeout(() => { if (!pointerOnPanel) hidePanel(); }, 80);
   });
 
+  // Touch support for mobile — tap a node/path to select
+  canvas.addEventListener('touchstart', (e) => {
+    if (!done) return;
+    const touch = e.touches[0];
+    const r = canvas.getBoundingClientRect();
+    const mx = touch.clientX - r.left;
+    const my = touch.clientY - r.top;
+    let nearest = -1;
+    let minD = 40;
+    paths.forEach((p, i) => {
+      const d = Math.hypot(mx - p.nodeX, my - p.nodeY);
+      if (d < minD) { minD = d; nearest = i; }
+    });
+    if (nearest === -1) {
+      let bestLineD = 20;
+      paths.forEach((p, i) => {
+        const c = chartRect();
+        if (mx < c.x || mx > c.x + c.w) return;
+        const t = (mx - c.x) / c.w;
+        const iFloat = t * (STEPS - 1);
+        const i0 = Math.floor(iFloat);
+        const i1 = Math.min(STEPS - 1, i0 + 1);
+        const frac = iFloat - i0;
+        const v = p.pts[i0] * (1 - frac) + p.pts[i1] * frac;
+        const { y } = toPx(i0, v);
+        const d = Math.abs(my - y);
+        if (d < bestLineD) { bestLineD = d; nearest = i; }
+      });
+    }
+    if (nearest >= 0) {
+      e.preventDefault();
+      activeIdx = nearest;
+      renderPanel(paths[nearest].data);
+      showPanel();
+      draw();
+    } else {
+      hidePanel();
+    }
+  }, { passive: false });
+
   btn.addEventListener('click', runSim);
   window.addEventListener('resize', () => {
     resize();
     if (done) draw();
+  });
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => { resize(); if (done) draw(); }, 300);
   });
 
   // Auto-run when section scrolls into view
@@ -1378,6 +1431,18 @@ function initMonteCarlo() {
     });
   }, { threshold: 0.3 });
   io.observe(canvas);
+
+  // First-load fix for mobile: .section-reveal transform scales the bounding
+  // rect during reveal. Listen for transitionend to re-resize once layout settles.
+  const reveal = canvas.closest('.section-reveal');
+  if (reveal) {
+    reveal.addEventListener('transitionend', ev => {
+      if (ev.propertyName === 'transform') {
+        resize();
+        if (done) draw();
+      }
+    });
+  }
 
   resize();
 }
