@@ -1459,6 +1459,35 @@ function initMonteCarlo() {
   }, { threshold: 0.05 });
   io.observe(canvas);
 
+  // ResizeObserver catches any box-size change — including when the
+  // .section-reveal transform (scale 0.88) finishes settling on first load.
+  if (window.ResizeObserver) {
+    let lastW = 0, lastH = 0;
+    const ro = new ResizeObserver(entries => {
+      for (const e of entries) {
+        const cr = e.contentRect;
+        if (Math.abs(cr.width - lastW) > 1 || Math.abs(cr.height - lastH) > 1) {
+          lastW = cr.width; lastH = cr.height;
+          resize();
+          if (done) draw();
+        }
+      }
+    });
+    ro.observe(canvas);
+  }
+
+  // Also listen for transitionend on the scroll-reveal parent — when the
+  // 0.88 → 1.0 scale transition finishes, force a fresh resize.
+  const reveal = canvas.closest('.section-reveal');
+  if (reveal) {
+    reveal.addEventListener('transitionend', ev => {
+      if (ev.propertyName === 'transform' || ev.propertyName === 'opacity') {
+        resize();
+        if (done) draw();
+      }
+    });
+  }
+
   // Initial resize + several retries for Safari / lazy layout / scroll-reveal
   resize();
   setTimeout(resize, 300);
