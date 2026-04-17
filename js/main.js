@@ -984,16 +984,8 @@ function initMonteCarlo() {
 
   const resize = () => {
     const r = canvas.getBoundingClientRect();
-    // Guard: Safari can return 0-size rect if element not yet laid out
-    if (r.width < 10 || r.height < 10) return;
-    const pw = Math.round(r.width  * DPR);
-    const ph = Math.round(r.height * DPR);
-    // Safari fix: only resize canvas buffer if dimensions actually changed
-    // (avoids unnecessary buffer clears that cause flicker)
-    if (canvas.width !== pw || canvas.height !== ph) {
-      canvas.width  = pw;
-      canvas.height = ph;
-    }
+    canvas.width  = Math.round(r.width  * DPR);
+    canvas.height = Math.round(r.height * DPR);
     canvas.style.width  = r.width  + 'px';
     canvas.style.height = r.height + 'px';
     ctx.setTransform(1,0,0,1,0,0);
@@ -1064,28 +1056,8 @@ function initMonteCarlo() {
     });
   };
 
-  const padT = 14, padB = 28;
-
-  const chartRect = () => {
-    // Responsive padding — reserve enough room on the right for labels
-    const pL = W < 500 ? 32 : 52;
-    // Use ~40% of width for labels on narrow, less on larger
-    const pR = W < 500 ? Math.max(100, Math.floor(W * 0.38))
-             : W < 760 ? Math.max(150, Math.floor(W * 0.30))
-             : 230;
-    return { x: pL, y: padT, w: W - pL - pR, h: H - padT - padB };
-  };
-
-  // Truncate a label so it fits inside `maxPx` at the given font
-  const fitLabel = (text, maxPx, fontPx) => {
-    ctx.font = `${fontPx}px "JetBrains Mono", monospace`;
-    if (ctx.measureText(text).width <= maxPx) return text;
-    let s = text;
-    while (s.length > 1 && ctx.measureText(s + '…').width > maxPx) {
-      s = s.slice(0, -1);
-    }
-    return s + '…';
-  };
+  const padL = 60, padR = 200, padT = 14, padB = 28;
+  const chartRect = () => ({ x: padL, y: padT, w: W - padL - padR, h: H - padT - padB });
 
   const toPx = (i, v) => {
     const c = chartRect();
@@ -1096,8 +1068,7 @@ function initMonteCarlo() {
 
   const drawAxes = () => {
     const c = chartRect();
-    const axisSize = W < 500 ? 7 : (W < 760 ? 8 : 10);
-    ctx.font = `${axisSize}px "JetBrains Mono", monospace`;
+    ctx.font = '10px "JetBrains Mono", monospace';
     ctx.fillStyle = 'rgba(138,154,179,.5)';
     ctx.strokeStyle = 'rgba(42,48,61,.6)';
     ctx.lineWidth = 1;
@@ -1185,16 +1156,12 @@ function initMonteCarlo() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // label — smaller font on narrow screens, truncated to fit available width
-    const labelSize = W < 500 ? 8 : (W < 760 ? 9 : 10);
-    const gap = 8;
-    const available = Math.max(20, W - (x + gap) - 4); // 4px safety margin
+    // label
+    ctx.font = '10px "JetBrains Mono", monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.35 : 0.95})`;
-    const labelText = fitLabel(p.data.label, available, labelSize);
-    ctx.font = `${labelSize}px "JetBrains Mono", monospace`;
-    ctx.fillText(labelText, x + gap, y);
+    ctx.fillText(p.data.label, x + 8, y);
   };
 
   const draw = () => {
@@ -1395,104 +1362,24 @@ function initMonteCarlo() {
     setTimeout(() => { if (!pointerOnPanel) hidePanel(); }, 80);
   });
 
-  // Touch support for mobile — tap a path/node to select, tap elsewhere to deselect
-  canvas.addEventListener('touchstart', (e) => {
-    if (!done) return;
-    const touch = e.touches[0];
-    const r = canvas.getBoundingClientRect();
-    const mx = touch.clientX - r.left;
-    const my = touch.clientY - r.top;
-    let nearest = -1;
-    let minD = 60;
-    paths.forEach((p, i) => {
-      const d = Math.hypot(mx - p.nodeX, my - p.nodeY);
-      if (d < minD) { minD = d; nearest = i; }
-    });
-    if (nearest === -1) {
-      let bestLineD = 24; // more forgiving on touch
-      paths.forEach((p, i) => {
-        const c = chartRect();
-        if (mx < c.x || mx > c.x + c.w) return;
-        const t = (mx - c.x) / c.w;
-        const iFloat = t * (STEPS - 1);
-        const i0 = Math.floor(iFloat);
-        const i1 = Math.min(STEPS - 1, i0 + 1);
-        const frac = iFloat - i0;
-        const v = p.pts[i0] * (1 - frac) + p.pts[i1] * frac;
-        const { y } = toPx(i0, v);
-        const d = Math.abs(my - y);
-        if (d < bestLineD) { bestLineD = d; nearest = i; }
-      });
-    }
-    if (nearest >= 0) {
-      e.preventDefault();
-      activeIdx = nearest;
-      renderPanel(paths[nearest].data);
-      showPanel();
-      draw();
-    }
-  }, { passive: false });
-
   btn.addEventListener('click', runSim);
   window.addEventListener('resize', () => {
     resize();
     if (done) draw();
   });
-  window.addEventListener('orientationchange', () => {
-    setTimeout(() => { resize(); if (done) draw(); }, 300);
-  });
 
   // Auto-run when section scrolls into view
-  // Lower threshold for Safari which can be strict about visibility
   const io = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !done && !running) {
-        // Wait for scroll-reveal transform (.section-reveal scale 0.88) to settle
-        setTimeout(() => {
-          resize();
-          // Double-check after layout fully settles
-          setTimeout(() => { resize(); runSim(); }, 200);
-        }, 700);
+        runSim();
         io.unobserve(canvas);
       }
     });
-  }, { threshold: 0.05 });
+  }, { threshold: 0.3 });
   io.observe(canvas);
 
-  // ResizeObserver catches any box-size change — including when the
-  // .section-reveal transform (scale 0.88) finishes settling on first load.
-  if (window.ResizeObserver) {
-    let lastW = 0, lastH = 0;
-    const ro = new ResizeObserver(entries => {
-      for (const e of entries) {
-        const cr = e.contentRect;
-        if (Math.abs(cr.width - lastW) > 1 || Math.abs(cr.height - lastH) > 1) {
-          lastW = cr.width; lastH = cr.height;
-          resize();
-          if (done) draw();
-        }
-      }
-    });
-    ro.observe(canvas);
-  }
-
-  // Also listen for transitionend on the scroll-reveal parent — when the
-  // 0.88 → 1.0 scale transition finishes, force a fresh resize.
-  const reveal = canvas.closest('.section-reveal');
-  if (reveal) {
-    reveal.addEventListener('transitionend', ev => {
-      if (ev.propertyName === 'transform' || ev.propertyName === 'opacity') {
-        resize();
-        if (done) draw();
-      }
-    });
-  }
-
-  // Initial resize + several retries for Safari / lazy layout / scroll-reveal
   resize();
-  setTimeout(resize, 300);
-  setTimeout(resize, 900);
-  setTimeout(() => { resize(); if (done) draw(); }, 1800);
 }
 
 /* ══════════════════════════════════════════ HUD PANEL ════ */
