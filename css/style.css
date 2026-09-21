@@ -2123,6 +2123,12 @@ a.ci-val:hover { color: var(--green); }
   .site-footer       { flex-direction: column; gap: .6rem; text-align: center; }
 }
 
+/* ─── Phones in landscape ─── */
+@media (max-height: 500px) and (max-width: 960px) and (orientation: landscape) {
+  .work-canvas-wrap  { min-height: 500px; }
+  #mc-canvas         { height: 480px; width: 100%; }
+}
+
 /* ─── Phones portrait ─── */
 @media (max-width: 480px) {
   section             { padding: 2.8rem .8rem; }
