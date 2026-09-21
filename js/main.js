@@ -796,6 +796,36 @@ function initMonteCarlo() {
   //   label = short chart label (role for internship, project name for project)
   const DATA = [
     {
+      label: 'Graduate Assistant',
+      kind: 'LEADERSHIP', kindColor: 'var(--gold)', kindRgba: '255,215,0',
+      rgba: [255,215,0], mu: 0.28, sigma: 0.18,
+      title: 'Graduate Assistant',
+      sub: 'NYU WIRELESS · New York, NY',
+      date: '09/26 — PRESENT',
+      bullets: [
+        'Support day-to-day academic and administrative operations, including scheduling, documentation, communications and student-facing requests',
+        'Coordinate across students, faculty and staff to keep priorities aligned, information organized and deliverables moving',
+        'Help organize programs and events, guide student teams and strengthen processes through reliable follow-through'
+      ],
+      tags: ['#Leadership','#Administration','#Coordination','#StudentSupport'],
+      metric: { lbl: 'STATUS', val: 'CURRENT' }
+    },
+    {
+      label: 'Quant Research Intern',
+      kind: 'INTERNSHIP', kindColor: 'var(--green)', kindRgba: '0,255,136',
+      rgba: [0,255,136], mu: 0.27, sigma: 0.20,
+      title: 'Quant Research Intern',
+      sub: 'Veta Investment Partners · Princeton, NJ',
+      date: '05/26 — 08/26',
+      bullets: [
+        'Built a ~20-module Python options analytics pipeline spanning reconciled custodian data, portfolio risk, hedge recommendations, strategy pricing and automated reporting',
+        'Developed a dividend-adjusted Black-Scholes-Merton pricing and Greeks engine with implied-volatility solving; validated Greeks to ~1e-7 and reconciled prices to the cent',
+        'Engineered pricing and recommendation models across 5 option-strategy families, including numerical zero-cost collar solving for concentrated portfolios'
+      ],
+      tags: ['#Python','#Options','#Greeks','#PostgreSQL','#RiskAnalytics'],
+      metric: { lbl: 'MODULES', val: '~20' }
+    },
+    {
       label: 'Unspanned Factor Premia',
       kind: 'PROJECT', kindColor: 'var(--cyan)', kindRgba: '0,212,255',
       rgba: [0,212,255], mu: 0.26, sigma: 0.22,
@@ -977,17 +1007,22 @@ function initMonteCarlo() {
     }
   ];
 
+  nEl.textContent = `0 / ${DATA.length}`;
+
   // Canvas state
   let W = 0, H = 0;
   // Safari on iOS can report DPR 3 — cap at 2 for canvas perf / memory
   const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
   const resize = () => {
+    // Let the responsive CSS recalculate the display size before updating the
+    // canvas backing store. Keeping an old inline pixel width would otherwise
+    // leave the chart compressed after a viewport or orientation change.
+    canvas.style.removeProperty('width');
+    canvas.style.removeProperty('height');
     const r = canvas.getBoundingClientRect();
     canvas.width  = Math.round(r.width  * DPR);
     canvas.height = Math.round(r.height * DPR);
-    canvas.style.width  = r.width  + 'px';
-    canvas.style.height = r.height + 'px';
     ctx.setTransform(1,0,0,1,0,0);
     ctx.scale(DPR, DPR);
     W = r.width;
@@ -1529,7 +1564,7 @@ function randomizeCards(cards) {
   if (handEl) handEl.innerHTML = hand.join(' &nbsp; ');
   const evalEl = document.getElementById('deck-meta-eval');
   if (evalEl) {
-    evalEl.innerHTML = evaluateHand(hand) + ' <span class="deck-meta-star">★ BEST PAPER</span>';
+    evalEl.innerHTML = evaluateHand(hand) + ' <span class="deck-meta-star">★ 2 WINNING PAPERS</span>';
   }
 }
 
@@ -1614,7 +1649,7 @@ function initDeckDeal() {
     setTimeout(() => grid.classList.add('is-dealt'), 1150);
 
     // Phase 3: flip all cards face-up (staggered)
-    const dealDone = 1150 + 5 * 140 + 520;
+    const dealDone = 1150 + (cards.length - 1) * 140 + 520;
     setTimeout(() => grid.classList.add('is-flipped'), dealDone);
   };
 
