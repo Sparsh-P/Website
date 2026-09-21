@@ -1092,7 +1092,11 @@ function initMonteCarlo() {
   };
 
   const padL = 60, padR = 200, padT = 14, padB = 28;
-  const isMobile = () => window.innerWidth < 760;
+  // Keep the drawing mode aligned with the CSS breakpoint in every browser,
+  // including Chrome zoom levels and exactly-760px tablet viewports.
+  const isMobile = () => window.matchMedia(
+    '(max-width: 760px), (max-height: 500px) and (max-width: 960px)'
+  ).matches;
   const chartRect = () => {
     if (isMobile()) {
       // Mobile: use full width — labels are hidden, only dots shown
@@ -1199,13 +1203,20 @@ function initMonteCarlo() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // label — hidden on mobile (tap a node to see details in panel)
+    // Full labels on larger screens. On phones, keep the chart readable while
+    // still identifying the two newest roles; every node remains tap-to-view.
     if (!isMobile()) {
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.35 : 0.95})`;
       ctx.fillText(p.data.label, x + 8, y);
+    } else if (idx < 2) {
+      ctx.font = '8px "JetBrains Mono", monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(${p.data.rgba.join(',')},${dim ? 0.45 : 0.95})`;
+      ctx.fillText(p.data.label, x - 8, y);
     }
   };
 
@@ -1448,13 +1459,26 @@ function initMonteCarlo() {
   }, { passive: false });
 
   btn.addEventListener('click', runSim);
-  window.addEventListener('resize', () => {
-    resize();
-    if (done) draw();
-  });
+  let resizeRaf = 0;
+  const syncCanvasSize = () => {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+      resize();
+      if (done) draw();
+    });
+  };
+
+  window.addEventListener('resize', syncCanvasSize);
   window.addEventListener('orientationchange', () => {
-    setTimeout(() => { resize(); if (done) draw(); }, 300);
+    setTimeout(syncCanvasSize, 300);
   });
+
+  // Chrome, Safari and mobile browsers do not always emit a window resize
+  // when a responsive parent changes size. Observe the chart container too.
+  if (typeof ResizeObserver !== 'undefined') {
+    const sizeObserver = new ResizeObserver(syncCanvasSize);
+    sizeObserver.observe(canvas.parentElement);
+  }
 
   // Auto-run when section scrolls into view
   const io = new IntersectionObserver(entries => {
